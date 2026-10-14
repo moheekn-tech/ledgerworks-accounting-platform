@@ -15,7 +15,8 @@
 | Approved frontend redesign | Passed | B styling/owner home plus C accountant review; all 20 views opened, source document dialog, owner reply, revision save and synthetic INR 118 approval verified; desktop and mobile checks in docs/frontend-redesign.md |
 | Live Zoho/Tally | Protocol tests passed; customer qualification unperformed | Published schemas and emulated transports. No authorized live organization or physical Tally runtime supplied |
 | Statutory provider | Normalized adapter/manual export tested | No selected/authorized provider; government submission, OTP/DSC, FVU and acknowledgement not demonstrated |
-| Production Docker/server | Authored, not executed | No Docker on this Windows host. Compose references inspected and CI Docker build defined; server/domain access absent |
+| GitHub CI | Passed | [Initial public-repository run](https://github.com/moheekn-tech/ledgerworks-accounting-platform/actions/runs/38599142939): dependency installation, TypeScript/Vite build, all 36 tests, production dependency audit and Docker image build on Ubuntu with Node.js 22.22.3 |
+| Production Docker/server | Image build passed; server deployment unexecuted | Docker image built successfully in GitHub CI. Production Compose startup, runtime acceptance and deployment to the customer's server are not demonstrated; server/domain access absent |
 
 Machine-readable results are in data/verification and excluded from distribution. All execution checks used synthetic data. Classifier scores are not accounting accuracy qualification. Source contracts do not prove account-specific integration.
 
