@@ -1,0 +1,14 @@
+[
+  {
+    "key": "a",
+    "prompt": "Edit this UI mockup very selectively. Preserve the whole layout, typography, forest-green palette, navigation, sizes, main content, sample values and every control. Only simplify the RIGHT detail pane: replace the long explanatory paragraph under 'Prepared for accountant' with nothing, leaving just the concise status label. Simplify the invoice thumbnail to a tasteful short paper preview labelled 'Sample invoice', 'Cloudstack', 'CL-2026-10', '07 Oct 2026', one line 'Software subscription ₹5,900', and 'Total ₹5,900'. No GSTIN, addresses, tax calculations or long prose in this sample thumbnail. Keep the invoice-paper appearance and right pane's structure. Everything else stays unchanged. Crisp, legible product UI."
+  },
+  {
+    "key": "b",
+    "prompt": "Edit this existing accounting mockup while preserving its exact layout, ivory/terracotta palette, editorial typography, all top summary values, all navigation and all task sections. Fix only these sample-data details: Ravi payment sublabel must be 'Needs details', replacing 'Payment due'. The Latest transactions table must contain unrelated already-posted records, avoiding the awaiting-review invoices above: row1 '14 Oct 2026' 'Client payment – Mehta Enterprises' '₹75,000' 'Received'; row2 '12 Oct 2026' 'Internet & phone' '₹1,499' 'Paid'; row3 '10 Oct 2026' 'Office rent' '₹18,000' 'Paid'. Use a neutral gray indicator for Paid, green for Received; no red warning color on a normal paid transaction. Keep everything else unchanged, with clear accurately rendered text."
+  },
+  {
+    "key": "c",
+    "prompt": "Edit this accountant review UI mockup selectively, keeping exact layout, gray/indigo palette, typography, source/effect side-by-side, every amount, navigation, filters and approval controls. Simplify the paper source-document thumbnail so it shows only 'Sample invoice', 'Cloudstack', 'CL-2026-10', '07 Oct 2026', 'Software subscription ₹5,900', 'Total ₹5,900' and the existing PDF filename at bottom. Remove all invented tax rows, subtotal, GSTIN, address and quantity information; the sample receipt arithmetic must not contradict the ₹5,900 total. Make the main review table's first Source column concise and stop repeating party names: first row 'Bill' then small 'CL-2026-10', second 'Bill' then 'KL-108', third 'Bank payment' then '07 Oct 2026', fourth 'Bank charge' then '06 Oct 2026', fifth 'Invoice' then 'INV-104', sixth 'Transfer' then '05 Oct 2026'. Party column remains Cloudstack, Kumar Legal, Ravi Sharma, HDFC Bank, Alder Design, Own account. Preserve the correct two-line accounting entry: Software subscriptions debit 5,900; Accounts payable credit 5,900. All remaining UI is unchanged and legible."
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-14",
+  "intent": "Visual options for review before frontend changes",
+  "currentProblems": [
+    "Too many equally prominent navigation items",
+    "Tiny low-contrast text",
+    "Too much explanatory copy",
+    "Generic decorative dashboard styling"
+  ],
+  "sharedRequirements": [
+    "Both business owners and accountants",
+    "Concise action labels",
+    "Readable type and numeric columns",
+    "Document evidence and accountant approval",
+    "Keep existing business workflows and backend"
+  ]
+}
