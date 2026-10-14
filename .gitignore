@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+data/
+*.log
+artifacts/
+
+build/
+deploy/secrets/
+deploy/.env
+.DS_Store
+Thumbs.db
