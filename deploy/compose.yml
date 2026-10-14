@@ -1,0 +1,112 @@
+name: ledgerworks
+x-runtime: &runtime
+  build: ..
+  image: ledgerworks:local
+  restart: unless-stopped
+  init: true
+  environment: &environment
+    NODE_ENV: production
+    HOST: 0.0.0.0
+    DATA_DIR: /app/data
+    DATABASE_URL_FILE: /run/secrets/database_url
+    AUTH_USERS_FILE: /run/secrets/auth_users
+    BACKUP_KEY_FILE: /run/secrets/backup_key
+    OPENAI_API_KEY_FILE: /run/secrets/openai_api_key
+    ZOHO_CLIENT_ID_FILE: /run/secrets/zoho_client_id
+    ZOHO_CLIENT_SECRET_FILE: /run/secrets/zoho_client_secret
+    ZOHO_REFRESH_TOKEN_FILE: /run/secrets/zoho_refresh_token
+    TALLY_GATEWAY_TOKEN_FILE: /run/secrets/tally_gateway_token
+    FILING_API_TOKEN_FILE: /run/secrets/filing_api_token
+    FILING_PROVIDER_CONFIG_FILE: /run/secrets/filing_providers
+    TALLY_GATEWAY_URL: ${TALLY_GATEWAY_URL:-}
+    MODEL_PROVIDER: ${MODEL_PROVIDER:-local}
+    OPENAI_MODEL: ${OPENAI_MODEL:-}
+    ORCHESTRATOR: temporal
+    TEMPORAL_ADDRESS: temporal:7233
+    COOKIE_SECURE: "true"
+    ALLOW_LIVE_WRITES: ${ALLOW_LIVE_WRITES:-false}
+  volumes: [app_data:/app/data]
+  secrets: [database_url,auth_users,backup_key,openai_api_key,zoho_client_id,zoho_client_secret,zoho_refresh_token,tally_gateway_token,filing_api_token,filing_providers]
+  networks: [private]
+  depends_on:
+    postgres: {condition: service_healthy}
+    temporal: {condition: service_healthy}
+services:
+  postgres:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: accounting
+      POSTGRES_DB: accounting
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    networks: [private]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U accounting -d accounting"], interval: 5s, timeout: 5s, retries: 20}
+  temporal-postgres:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_DB: temporal
+      POSTGRES_PASSWORD_FILE: /run/secrets/temporal_password
+    secrets: [temporal_password]
+    volumes: [temporal_db:/var/lib/postgresql/data]
+    networks: [private]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U temporal"], interval: 5s, timeout: 5s, retries: 20}
+  temporal:
+    image: temporalio/auto-setup:1.29.1
+    restart: unless-stopped
+    entrypoint: [/bin/sh, /config/temporal-entrypoint.sh]
+    environment:
+      DB: postgres12
+      DB_PORT: "5432"
+      POSTGRES_USER: temporal
+      POSTGRES_SEEDS: temporal-postgres
+      DYNAMIC_CONFIG_FILE_PATH: /config/dynamicconfig.yaml
+      TEMPORAL_ADDRESS: temporal:7233
+    secrets: [temporal_password]
+    volumes: ["./temporal-entrypoint.sh:/config/temporal-entrypoint.sh:ro", "./dynamicconfig.yaml:/config/dynamicconfig.yaml:ro"]
+    networks: [private]
+    depends_on:
+      temporal-postgres: {condition: service_healthy}
+    healthcheck: {test: [CMD-SHELL, "temporal operator cluster health --address 127.0.0.1:7233"], interval: 10s, timeout: 10s, retries: 30}
+  app:
+    <<: *runtime
+    networks: [private,edge]
+  worker:
+    <<: *runtime
+    command: [node, build/server/temporal/worker.js]
+    healthcheck: {disable: true}
+  initialize:
+    <<: *runtime
+    profiles: [setup]
+    restart: "no"
+    command: [node, deploy/initialize.mjs]
+    secrets: [database_url,auth_users,backup_key,openai_api_key,zoho_client_id,zoho_client_secret,zoho_refresh_token,tally_gateway_token,filing_api_token,filing_providers,initial_company]
+    healthcheck: {disable: true}
+  proxy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment: {PUBLIC_HOST: "${PUBLIC_HOST:?Set PUBLIC_HOST in deploy/.env}"}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", caddy_data:/data, caddy_config:/config]
+    networks: [edge]
+    depends_on:
+      app: {condition: service_healthy}
+volumes: {postgres_data: {}, temporal_db: {}, app_data: {}, caddy_data: {}, caddy_config: {}}
+networks: {private: {}, edge: {}}
+secrets:
+  initial_company: {file: ./secrets/initial-company.json}
+  postgres_password: {file: ./secrets/postgres_password}
+  temporal_password: {file: ./secrets/temporal_password}
+  database_url: {file: ./secrets/database_url}
+  auth_users: {file: ./secrets/auth-users.json}
+  backup_key: {file: ./secrets/backup_key}
+  openai_api_key: {file: ./secrets/openai_api_key}
+  zoho_client_id: {file: ./secrets/zoho_client_id}
+  zoho_client_secret: {file: ./secrets/zoho_client_secret}
+  zoho_refresh_token: {file: ./secrets/zoho_refresh_token}
+  tally_gateway_token: {file: ./secrets/tally_gateway_token}
+  filing_api_token: {file: ./secrets/filing_api_token}
+  filing_providers: {file: ./secrets/filing-providers.json}
