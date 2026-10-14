@@ -1,0 +1,4 @@
+import {localCoding} from '../server/local-model.js';import {writeFileSync,mkdirSync} from 'node:fs';import {resolve} from 'node:path';
+const accounts:any[]=[{id:'software',name:'Software subscriptions'},{id:'rent',name:'Office rent'},{id:'legal',name:'Legal and professional fees'},{id:'salary',name:'Salaries and payroll'}];
+const results=[];for(const description of ['Monthly software subscription for cloud hosting','Monthly office rent paid to landlord','Legal advice and lawyer professional fee'])results.push({description,...await localCoding(description,accounts)});
+const folder=resolve('data/verification');mkdirSync(folder,{recursive:true});writeFileSync(resolve(folder,'model-result.json'),JSON.stringify({runtime:'Transformers.js ONNX CPU',syntheticData:true,results},null,2));console.log(JSON.stringify(results));
